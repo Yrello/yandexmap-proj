@@ -8,6 +8,7 @@ import math
 from distance import lonlat_distance
 from geo import reverse_geocode
 from bis import find_business
+from inp import inp_box
 # это не готовое решение. Здесь лишь примеры реализации некоторой функциональности из задач урока.
 
 # Подобранные константы для поведения карты.
@@ -73,6 +74,8 @@ class MapParams(object):
             self.search_result = None
         elif event.key == 277:  # INSERT
             self.use_postal_code = not self.use_postal_code
+        elif event.key == pygame.K_SPACE:
+            print(inp_box())
 
         if self.lon > 180: self.lon -= 360
         if self.lon < -180: self.lon += 360

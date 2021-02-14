@@ -1,82 +1,92 @@
-import pygame as pg
+def inp_box():
+    import pygame as pg
 
 
-pg.init()
-screen = pg.display.set_mode((640, 480))
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
-FONT = pg.font.Font(None, 32)
+    pg.init()
+    screen = pg.display.set_mode((600, 450))
+    COLOR_INACTIVE = pg.Color('lightskyblue3')
+    COLOR_ACTIVE = pg.Color('dodgerblue2')
+    FONT = pg.font.Font(None, 32)
 
 
-class InputBox:
+    class InputBox:
 
-    def __init__(self, x, y, w, h, text=''):
-        self.rect = pg.Rect(x, y, w, h)
-        self.color = COLOR_INACTIVE
-        self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
-        self.active = False
+        def __init__(self, x, y, w, h, text=''):
+            self.rect = pg.Rect(x, y, w, h)
+            self.color = COLOR_INACTIVE
+            self.text = text
+            self.txt_surface = FONT.render(text, True, self.color)
+            self.active = False
 
-    def handle_event(self, event):
-        if event.type == pg.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
-            else:
-                self.active = False
-            # Change the current color of the input box.
-            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
-        if event.type == pg.KEYDOWN:
-            if self.active:
-                if event.key == pg.K_RETURN:
-                    print(self.text)
-                    self.text = ''
-                elif event.key == pg.K_BACKSPACE:
-                    self.text = self.text[:-1]
+        def handle_event(self, event):
+            if event.type == pg.MOUSEBUTTONDOWN:
+                # If the user clicked on the input_box rect.
+                if self.rect.collidepoint(event.pos):
+                    # Toggle the active variable.
+                    self.active = not self.active
                 else:
-                    self.text += event.unicode
-                # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                    self.active = False
+                # Change the current color of the input box.
+                self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+            if event.type == pg.KEYDOWN:
+                if self.active:
+                    if event.key == pg.K_RETURN:
+                        print(self.text)
+                        return self.text
+                        self.text = ''
 
-    def update(self):
-        # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
+                    elif event.key == pg.K_BACKSPACE:
+                        self.text = self.text[:-1]
+                    else:
+                        self.text += event.unicode
+                    # Re-render the text.
+                    self.txt_surface = FONT.render(self.text, True, self.color)
 
-    def draw(self, screen):
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-        # Blit the rect.
-        pg.draw.rect(screen, self.color, self.rect, 2)
+        def update(self):
+            # Resize the box if the text is too long.
+            width = max(200, self.txt_surface.get_width()+10)
+            self.rect.w = width
+
+        def draw(self, screen):
+            # Blit the text.
+            screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+            # Blit the rect.
+            pg.draw.rect(screen, self.color, self.rect, 2)
 
 
 
-def main():
-    clock = pg.time.Clock()
-    input_box1 = InputBox(100, 100, 140, 32)
-    input_box2 = InputBox(100, 300, 140, 32)
-    input_boxes = [input_box1, input_box2]
-    done = False
+    def main():
+        clock = pg.time.Clock()
+        input_box1 = InputBox(100, 200, 140, 32)
+        input_boxes = [input_box1]
+        done = False
+        text = ''
 
-    while not done:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                done = True
+        while not done:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    done = True
+                for box in input_boxes:
+                    text = box.handle_event(event)
+                    #box.handle_event(event)
+                    if text:
+                        print(text)
+                        return text
+
             for box in input_boxes:
-                box.handle_event(event)
+                box.update()
 
-        for box in input_boxes:
-            box.update()
+            screen.fill((30, 30, 30))
+            for box in input_boxes:
+                box.draw(screen)
 
-        screen.fill((30, 30, 30))
-        for box in input_boxes:
-            box.draw(screen)
+            pg.display.flip()
+            clock.tick(30)
 
-        pg.display.flip()
-        clock.tick(30)
-
+    s = main()
+    return s
 
 if __name__ == '__main__':
-    main()
-    pg.quit()
+    inp_box()
+    import pygame
+    pygame.quit()
